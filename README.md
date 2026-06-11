@@ -247,7 +247,13 @@ Basic setup:
 npm run setup
 ```
 
-Setup with the tiny English local Whisper model:
+During setup, if no local Whisper model and no API key are found, Reel Notes asks which model path you want:
+
+- download the default local Whisper model
+- use OpenAI API and enter model names
+- skip and configure `.env` later
+
+Non-interactive setup with the tiny English local Whisper model:
 
 ```sh
 npm run setup -- --with-local-whisper
@@ -260,6 +266,7 @@ The setup script:
 - checks `ffmpeg`
 - checks `yt-dlp`
 - creates `.env` from `.env.example` if needed
+- asks how you want to configure transcription and enrichment when no model or API key is present
 - optionally downloads the tiny English local Whisper model
 
 ## Verification
