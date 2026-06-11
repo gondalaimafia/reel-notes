@@ -1,0 +1,54 @@
+{
+  "name": "reel-notes",
+  "version": "0.1.0",
+  "description": "Turn saved social videos into readable Markdown notes for Obsidian or any folder based note system.",
+  "license": "MIT",
+  "bin": {
+    "reel-notes": "dist/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build",
+    "verify": "npm run typecheck && npm run build && npm run sanitize",
+    "setup": "node scripts/setup.mjs",
+    "sanitize": "node scripts/sanitize.mjs",
+    "doctor": "tsx src/cli.ts doctor",
+    "login": "tsx src/login-profile.ts",
+    "discover": "tsx src/cli.ts discover",
+    "capture-media": "tsx src/cli.ts capture-media",
+    "drain-capture": "tsx src/cli.ts drain-capture",
+    "drain-capture-parallel": "tsx src/cli.ts drain-capture-parallel",
+    "transcribe": "tsx src/cli.ts transcribe",
+    "drain-audio": "tsx src/cli.ts drain-audio",
+    "drain-audio-parallel": "tsx src/cli.ts drain-audio-parallel",
+    "summarize": "tsx src/cli.ts summarize",
+    "enrich-notes": "tsx src/cli.ts enrich-notes",
+    "enrich-notes-parallel": "tsx src/cli.ts enrich-notes-parallel",
+    "write-notes": "tsx src/cli.ts write-notes",
+    "process": "tsx src/cli.ts process",
+    "backlog": "tsx src/cli.ts backlog",
+    "weekly": "tsx src/cli.ts weekly",
+    "sample": "tsx src/cli.ts sample",
+    "sample:markdown": "OUTPUT_ADAPTER=markdown OUTPUT_DIR=notes npm run sample",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "obsidian",
+    "instagram",
+    "reels",
+    "transcription",
+    "markdown",
+    "whisper",
+    "notes"
+  ],
+  "dependencies": {
+    "openai": "^5.5.1",
+    "playwright": "^1.53.0",
+    "tsx": "^4.19.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "typescript": "^5.8.3"
+  }
+}
