@@ -30,3 +30,4 @@ Reel Notes converts saved social videos into Markdown notes. Obsidian is the def
 - Keep note output deterministic and idempotent.
 - Prefer provider settings in `.env` over hard-coded models.
 - Do not add credentials or personal paths to defaults.
+- Keep tool output bounded. Never recursively enumerate `data`, browser profiles, logs, media, local models, generated notes, `node_modules`, or `dist`.

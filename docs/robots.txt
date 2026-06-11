@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gondalaimafia.github.io/reel-notes/sitemap.xml

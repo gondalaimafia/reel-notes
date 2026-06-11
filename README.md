@@ -6,6 +6,10 @@ It was designed for Obsidian first, but the output is just Markdown files in a f
 
 The first supported source is Instagram Saved reels and posts. The pipeline uses your own browser session, extracts audio with `yt-dlp`, transcribes it, asks an LLM to create a topic title plus key takeaway lesson, then writes one note per reel.
 
+Launch article:
+
+[Turn Saved Instagram Reels Into Obsidian Notes](https://gondalaimafia.github.io/reel-notes/)
+
 ## What It Creates
 
 Each video becomes a note like this:
