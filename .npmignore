@@ -1,0 +1,16 @@
+.git/
+.github/
+node_modules/
+data/
+notes/
+tmp-*/
+.env
+.env.*
+!.env.example
+*.log
+*.mp3
+*.mp4
+*.wav
+*.m4a
+*.tgz
+coverage/
