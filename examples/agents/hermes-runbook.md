@@ -17,8 +17,9 @@ Guardrails:
 3. Never commit .env, data, logs, browser profiles, media, local models, or generated notes.
 4. Use npm run doctor to verify Node, npm, ffmpeg, yt-dlp, output config, and model settings.
 5. Open npm run login so I can log in manually.
-6. Begin with RUN_LIMIT=3 and stop after the first test unless I approve a larger run.
-7. Keep the import resumable by relying on data/reels-index.json checkpoints.
+6. Run npm run auth-status and stop if login, checkpoint, or challenge is required.
+7. Begin with RUN_LIMIT=3 and stop after the first test unless I approve a larger run.
+8. Keep the import resumable by relying on data/reels-index.json checkpoints.
 
 Execution:
 npm run setup
@@ -26,6 +27,7 @@ npm run verify
 npm run doctor
 npm run sample
 npm run login
+npm run auth-status
 RUN_LIMIT=3 npm run process
 
 Backlog execution, only after my approval:

@@ -9,6 +9,7 @@ export interface AppConfig {
   instagramSavedUrl: string;
   chromeUserDataDir: string;
   chromeProfileDir: string;
+  browserChannel: "chromium" | "chrome" | "msedge";
   outputDir: string;
   outputAdapter: "obsidian" | "markdown";
   outputIndexFile: string;

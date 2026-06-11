@@ -9,7 +9,7 @@ Repo path:
 <path-to-reel-notes>
 
 Objective:
-Set up the project, verify dependencies, configure output, open the manual login browser, and run a small safe import before any larger backlog job.
+Set up the project, verify dependencies, configure output, open the manual login browser, confirm auth status, and run a small safe import before any larger backlog job.
 
 Guardrails:
 1. Never ask for or store my Instagram password.
@@ -27,6 +27,7 @@ npm run verify
 npm run doctor
 npm run sample
 npm run login
+npm run auth-status
 RUN_LIMIT=3 npm run process
 
 Backlog execution, only after my approval:

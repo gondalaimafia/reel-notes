@@ -3,6 +3,7 @@ import { chromium } from "playwright";
 import type { Page } from "playwright";
 import type { AppConfig, ReelRecord } from "./types.js";
 import { makeReelRecord, normalizeReelUrl } from "./index-store.js";
+import { explainAuthState, readBodyText, readInstagramAuthState } from "./instagram-auth.js";
 
 const stopPhrases = [
   "suspicious activity",
@@ -22,7 +23,7 @@ export async function discoverSavedReels(
   const userDataDir = path.resolve(config.chromeUserDataDir);
   const context = await chromium.launchPersistentContext(userDataDir, {
     headless: config.headless,
-    channel: "chrome",
+    channel: config.browserChannel === "chromium" ? undefined : config.browserChannel,
     args: [`--profile-directory=${config.chromeProfileDir}`],
     viewport: { width: 1365, height: 900 }
   });
@@ -31,6 +32,11 @@ export async function discoverSavedReels(
     const page = context.pages()[0] || (await context.newPage());
     await page.goto(config.instagramSavedUrl, { waitUntil: "commit", timeout: 120_000 });
     await page.waitForTimeout(config.paceMs);
+    const authState = await readInstagramAuthState(page);
+    if (authState !== "authenticated" && authState !== "unknown") {
+      throw new Error(explainAuthState(authState));
+    }
+
     await stopIfInstagramWarning(pageText(await readBodyText(page)));
     await openAllPostsCollectionIfNeeded(page, config.paceMs);
 
@@ -108,14 +114,6 @@ async function openAllPostsCollectionIfNeeded(page: Page, paceMs: number): Promi
 
 function pageText(value: string | null): string {
   return (value || "").toLowerCase();
-}
-
-async function readBodyText(page: Page): Promise<string> {
-  try {
-    return await page.evaluate(() => document.body?.innerText || "");
-  } catch {
-    return "";
-  }
 }
 
 async function stopIfInstagramWarning(text: string): Promise<void> {

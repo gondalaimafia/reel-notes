@@ -51,7 +51,7 @@ The unpolished transcript stays here for traceability.
 ## Requirements
 
 - Node.js 20 or newer
-- Chrome or Chromium
+- Chrome, Edge, or Playwright Chromium
 - Python, for `yt-dlp`
 - `ffmpeg`
 - Optional: OpenAI API key for OpenAI transcription and LLM note enrichment
@@ -86,6 +86,7 @@ Then edit `.env`:
 ```env
 OUTPUT_DIR=C:\path\to\your\ObsidianVault\raw\social\instagram
 OPENAI_API_KEY=your-api-key
+BROWSER_CHANNEL=chromium
 TRANSCRIPTION_PROVIDER=local
 SUMMARY_PROVIDER=openai
 OPENAI_SUMMARY_MODEL=gpt-4.1-mini
@@ -133,13 +134,27 @@ Codex should read the repo `AGENTS.md`, verify dependencies, help configure `.en
 
 The tool does not ask for your Instagram password.
 
-It opens a local Chrome profile. Log into Instagram yourself:
+It opens a persistent Chromium, Chrome, or Edge profile. Log into Instagram yourself:
 
 ```sh
 npm run login
 ```
 
-After login succeeds, close that browser window and start the import.
+After login succeeds, close that browser window and check the saved session:
+
+```sh
+npm run auth-status
+```
+
+The importer uses the same persistent browser profile for discovery. If Instagram shows a login page, checkpoint, challenge, or safety warning, discovery stops and tells you to run `npm run login` again. The tool never asks for your Instagram password and never stores it in `.env`.
+
+Browser channel options:
+
+```env
+BROWSER_CHANNEL=chromium
+BROWSER_CHANNEL=chrome
+BROWSER_CHANNEL=msedge
+```
 
 ## Import Commands
 

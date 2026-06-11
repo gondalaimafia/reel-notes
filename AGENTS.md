@@ -11,6 +11,7 @@ Reel Notes converts saved social videos into Markdown notes. Obsidian is the def
 - `npm run sample`: Write sample notes to `OUTPUT_DIR`.
 - `npm run doctor`: Check local tools and model configuration.
 - `npm run login`: Open the browser profile for manual login.
+- `npm run auth-status`: Check whether the browser profile is logged into Instagram.
 
 ## Architecture
 

@@ -14,6 +14,7 @@
     "setup": "node scripts/setup.mjs",
     "sanitize": "node scripts/sanitize.mjs",
     "doctor": "tsx src/cli.ts doctor",
+    "auth-status": "tsx src/cli.ts auth-status",
     "login": "tsx src/login-profile.ts",
     "discover": "tsx src/cli.ts discover",
     "capture-media": "tsx src/cli.ts capture-media",

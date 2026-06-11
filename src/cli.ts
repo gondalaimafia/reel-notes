@@ -12,6 +12,8 @@ import type { ReelRecord } from "./types.js";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { chromium } from "playwright";
+import { explainAuthState, readInstagramAuthState } from "./instagram-auth.js";
 
 const command = process.argv[2];
 const config = loadConfig();
@@ -35,6 +37,11 @@ async function main(): Promise<void> {
 
   if (command === "doctor") {
     printDoctor();
+    return;
+  }
+
+  if (command === "auth-status") {
+    await printAuthStatus();
     return;
   }
 
@@ -179,6 +186,7 @@ function printHelp(): void {
 
 Commands:
   doctor      Check local tools, output path, and model configuration
+  auth-status Check whether the configured Instagram browser profile is logged in
   sample       Create sample indexed reels and write Obsidian notes
   discover    Open Instagram Saved and index saved reel URLs
   capture-media Download reel audio for indexed reels
@@ -195,6 +203,26 @@ Commands:
   backlog     Run a larger backlog import
   weekly      Run a smaller incremental import
 `);
+}
+
+async function printAuthStatus(): Promise<void> {
+  const context = await chromium.launchPersistentContext(path.resolve(config.chromeUserDataDir), {
+    headless: config.headless,
+    channel: config.browserChannel === "chromium" ? undefined : config.browserChannel,
+    args: [`--profile-directory=${config.chromeProfileDir}`],
+    viewport: { width: 1365, height: 900 }
+  });
+
+  try {
+    const page = context.pages()[0] || (await context.newPage());
+    await page.goto(config.instagramSavedUrl, { waitUntil: "commit", timeout: 120_000 });
+    await page.waitForTimeout(config.paceMs);
+    const state = await readInstagramAuthState(page);
+    console.log(`Instagram auth state: ${state}`);
+    console.log(explainAuthState(state));
+  } finally {
+    await context.close();
+  }
 }
 
 function printDoctor(): void {
@@ -214,6 +242,7 @@ function printDoctor(): void {
 
   console.log(`OK output adapter: ${config.outputAdapter}`);
   console.log(`OK output dir: ${outputDir}`);
+  console.log(`OK browser channel: ${config.browserChannel}`);
   console.log(`OK transcription provider: ${config.transcriptionProvider}`);
   console.log(`OK enrichment model: ${config.openaiSummaryModel}`);
   console.log(`${process.env.OPENAI_API_KEY ? "OK" : "MISSING"} OPENAI_API_KEY`);

@@ -86,6 +86,15 @@ function envNoteFilenameMode(): "topic" | "creator_id" | "id" {
   return "topic";
 }
 
+function envBrowserChannel(): "chromium" | "chrome" | "msedge" {
+  const value = envString("BROWSER_CHANNEL", "chromium").toLowerCase();
+  if (value === "chrome" || value === "msedge") {
+    return value;
+  }
+
+  return "chromium";
+}
+
 function defaultChromeUserDataDir(): string {
   if (process.platform === "win32") {
     return path.join(os.homedir(), "AppData", "Local", "Google", "Chrome", "User Data");
@@ -105,6 +114,7 @@ export function loadConfig(): AppConfig {
     instagramSavedUrl: envString("INSTAGRAM_SAVED_URL", "https://www.instagram.com/saved/all-posts/"),
     chromeUserDataDir: envString("CHROME_USER_DATA_DIR", defaultChromeUserDataDir()),
     chromeProfileDir: envString("CHROME_PROFILE_DIR", "Default"),
+    browserChannel: envBrowserChannel(),
     outputDir: envString("OUTPUT_DIR", path.join(process.cwd(), "notes")),
     outputAdapter: envOutputAdapter(),
     outputIndexFile: envString("OUTPUT_INDEX_FILE", "Social Video Notes Index.md"),
