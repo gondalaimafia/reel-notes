@@ -59,6 +59,10 @@ The unpolished transcript stays here for traceability.
 
 ## Quick Start
 
+Choose one of these paths.
+
+### Option 1: Terminal
+
 ```powershell
 git clone https://github.com/your-name/reel-notes.git
 cd reel-notes
@@ -92,6 +96,22 @@ Run a sample first:
 ```sh
 npm run sample
 ```
+
+### Option 2: OpenClaw
+
+Clone the repo, then give OpenClaw this runbook:
+
+[examples/agents/openclaw-runbook.md](examples/agents/openclaw-runbook.md)
+
+OpenClaw should run setup, doctor, sample output, login, and then a small `RUN_LIMIT=3` import before any backlog import.
+
+### Option 3: Hermes
+
+Clone the repo, then give Hermes this runbook:
+
+[examples/agents/hermes-runbook.md](examples/agents/hermes-runbook.md)
+
+Hermes should verify the repo, check dependencies, help configure `.env`, and stop after the first small import unless you approve a larger run.
 
 ## Login
 

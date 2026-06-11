@@ -40,7 +40,9 @@
     "transcription",
     "markdown",
     "whisper",
-    "notes"
+    "notes",
+    "openclaw",
+    "hermes"
   ],
   "dependencies": {
     "openai": "^5.5.1",
