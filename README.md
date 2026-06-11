@@ -113,6 +113,22 @@ Clone the repo, then give Hermes this runbook:
 
 Hermes should verify the repo, check dependencies, help configure `.env`, and stop after the first small import unless you approve a larger run.
 
+### Option 4: Claude Code
+
+Clone the repo, then give Claude Code this runbook:
+
+[examples/agents/claude-code-runbook.md](examples/agents/claude-code-runbook.md)
+
+Claude Code should verify the repo, check dependencies, help configure `.env`, open the manual login browser, and stop after the first small import unless you approve a larger run.
+
+### Option 5: Codex
+
+Clone the repo, then give Codex this runbook:
+
+[examples/agents/codex-runbook.md](examples/agents/codex-runbook.md)
+
+Codex should read the repo `AGENTS.md`, verify dependencies, help configure `.env`, open the manual login browser, and start with a small `RUN_LIMIT=3` import.
+
 ## Login
 
 The tool does not ask for your Instagram password.

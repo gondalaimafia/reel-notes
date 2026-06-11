@@ -42,7 +42,9 @@
     "whisper",
     "notes",
     "openclaw",
-    "hermes"
+    "hermes",
+    "claude-code",
+    "codex"
   ],
   "dependencies": {
     "openai": "^5.5.1",
