@@ -3,6 +3,7 @@
 node_modules/
 data/
 notes/
+site/
 tmp-*/
 .env
 .env.*
@@ -14,3 +15,4 @@ tmp-*/
 *.m4a
 *.tgz
 coverage/
+.vercel/

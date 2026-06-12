@@ -8,7 +8,7 @@ The first supported source is Instagram Saved reels and posts. The pipeline uses
 
 Launch article:
 
-[Turn Saved Instagram Reels Into Obsidian Notes](https://gondalaimafia.github.io/reel-notes/)
+[Turn Saved Instagram Reels Into Obsidian Notes](https://reel-notes-phi.vercel.app/)
 
 ## What It Creates
 

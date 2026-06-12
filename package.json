@@ -10,10 +10,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepare": "npm run build",
-    "verify": "npm run typecheck && npm run build && npm run docs:check && npm run sanitize",
+    "verify": "npm run typecheck && npm run build && npm run docs:check && npm run site:build && npm run sanitize",
     "setup": "node scripts/setup.mjs",
     "sanitize": "node scripts/sanitize.mjs",
     "docs:check": "node scripts/check-docs.mjs",
+    "site:build": "node scripts/build-site.mjs",
     "doctor": "tsx src/cli.ts doctor",
     "auth-status": "tsx src/cli.ts auth-status",
     "login": "tsx src/login-profile.ts",

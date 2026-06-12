@@ -1,5 +1,6 @@
 node_modules/
 dist/
+site/
 data/
 notes/
 .env
@@ -16,3 +17,4 @@ credentials.json
 .DS_Store
 .idea/
 .vscode/
+.vercel/
