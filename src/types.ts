@@ -28,6 +28,8 @@ export interface AppConfig {
   openaiSummaryModel: string;
   localWhisperModel: string;
   mediaRetention: "delete_after_transcription" | "retain";
+  retryAttempts: number;
+  retryBaseMs: number;
 }
 
 export interface ReelRecord {

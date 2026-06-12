@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { withRetry } from "./recovery.js";
 import type { AppConfig, ReelRecord } from "./types.js";
 
 export interface SummaryResult {
@@ -25,21 +26,29 @@ export async function summarizeReels(config: AppConfig, reels: ReelRecord[]): Pr
       summary = fallbackSummary(reel.transcript);
     } else {
       try {
-      const response = await openai.responses.create({
-        model: config.openaiSummaryModel,
-        input: [
+        const response = await withRetry(
+          () =>
+            openai.responses.create({
+              model: config.openaiSummaryModel,
+              input: [
+                {
+                  role: "system",
+                  content:
+                    "Write compact Obsidian notes from Instagram reel transcripts. Preserve concrete ideas. Do not invent details."
+                },
+                {
+                  role: "user",
+                  content: `Caption:\n${reel.caption || "No caption available."}\n\nTranscript:\n${reel.transcript}`
+                }
+              ]
+            }),
           {
-            role: "system",
-            content:
-              "Write compact Obsidian notes from Instagram reel transcripts. Preserve concrete ideas. Do not invent details."
-          },
-          {
-            role: "user",
-            content: `Caption:\n${reel.caption || "No caption available."}\n\nTranscript:\n${reel.transcript}`
+            attempts: config.retryAttempts,
+            baseMs: config.retryBaseMs,
+            label: `summary ${reel.id}`
           }
-        ]
-      });
-      summary = response.output_text.trim();
+        );
+        summary = response.output_text.trim();
       } catch {
         summary = fallbackSummary(reel.transcript);
       }

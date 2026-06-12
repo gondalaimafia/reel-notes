@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { isRetryableError, withRetry } from "./recovery.js";
 import type { AppConfig, ReelRecord } from "./types.js";
 
 export interface ContentEnrichmentResult {
@@ -58,31 +59,24 @@ export async function enrichReelContent(
 }
 
 async function createInsight(openai: OpenAI, config: AppConfig, reel: ReelRecord): Promise<ReelContentInsight> {
-  let lastError: unknown;
-  for (let attempt = 1; attempt <= 4; attempt += 1) {
-    try {
-      return await createInsightOnce(openai, config, reel);
-    } catch (error) {
-      lastError = error;
-      const message = error instanceof Error ? error.message : String(error);
-      if (message.includes("insufficient_quota")) {
-        throw error;
+  try {
+    return await withRetry(() => createInsightOnce(openai, config, reel), {
+      attempts: config.retryAttempts,
+      baseMs: config.retryBaseMs,
+      label: `content enrichment ${reel.id}`,
+      isRetryable: (error) => {
+        const message = error instanceof Error ? error.message : String(error);
+        return !message.includes("insufficient_quota") && isRetryableError(error);
       }
-
-      if (!message.includes("rate_limit") && !message.includes("429") && attempt >= 2) {
-        break;
-      }
-
-      await wait(1000 * attempt * attempt);
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes("insufficient_quota") || message.includes("rate_limit") || message.includes("429")) {
+      throw error;
     }
-  }
 
-  const message = lastError instanceof Error ? lastError.message : String(lastError);
-  if (message.includes("rate_limit") || message.includes("429")) {
-    throw lastError;
+    return fallbackFromTranscript(reel);
   }
-
-  return fallbackFromTranscript(reel);
 }
 
 async function createInsightOnce(openai: OpenAI, config: AppConfig, reel: ReelRecord): Promise<ReelContentInsight> {
@@ -146,10 +140,6 @@ ${clipText(reel.transcript || "", 10000)}`
 
     return fallbackFromTranscript(reel);
   }
-}
-
-function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function normalizeInsight(insight: ReelContentInsight): ReelContentInsight {

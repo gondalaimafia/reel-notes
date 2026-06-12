@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import OpenAI from "openai";
+import { compactError, withRetry } from "./recovery.js";
 import type { AppConfig, ReelRecord } from "./types.js";
 
 export interface TranscriptionResult {
@@ -52,7 +53,25 @@ export async function transcribeReels(config: AppConfig, reels: ReelRecord[]): P
 
     let transcriptText: string;
     if (config.transcriptionProvider === "local" || !process.env.OPENAI_API_KEY) {
-      transcriptText = await transcribeWithLocalWhisper(config, reel.id, audioPath);
+      try {
+        transcriptText = await withRetry(() => transcribeWithLocalWhisper(config, reel.id, audioPath), {
+          attempts: config.retryAttempts,
+          baseMs: config.retryBaseMs,
+          label: `local transcription ${reel.id}`
+        });
+      } catch (error) {
+        results.push({
+          reel: {
+            ...reel,
+            status: "failed",
+            updatedAt: new Date().toISOString(),
+            lastError: compactError(error)
+          },
+          changed: true
+        });
+        continue;
+      }
+
       if (!transcriptText.trim()) {
         results.push({
           reel: {
@@ -67,20 +86,46 @@ export async function transcribeReels(config: AppConfig, reels: ReelRecord[]): P
       }
     } else {
       try {
-        const transcript = await openai.audio.transcriptions.create({
-          file: fs.createReadStream(audioPath),
-          model: config.openaiTranscriptionModel
-        });
+        const transcript = await withRetry(
+          () =>
+            openai.audio.transcriptions.create({
+              file: fs.createReadStream(audioPath),
+              model: config.openaiTranscriptionModel
+            }),
+          {
+            attempts: config.retryAttempts,
+            baseMs: config.retryBaseMs,
+            label: `OpenAI transcription ${reel.id}`
+          }
+        );
         transcriptText = transcript.text.trim();
       } catch (error) {
-        transcriptText = await transcribeWithLocalWhisper(config, reel.id, audioPath);
+        try {
+          transcriptText = await withRetry(() => transcribeWithLocalWhisper(config, reel.id, audioPath), {
+            attempts: config.retryAttempts,
+            baseMs: config.retryBaseMs,
+            label: `fallback local transcription ${reel.id}`
+          });
+        } catch (fallbackError) {
+          results.push({
+            reel: {
+              ...reel,
+              status: "failed",
+              updatedAt: new Date().toISOString(),
+              lastError: `${compactError(error)}; fallback failed: ${compactError(fallbackError)}`
+            },
+            changed: true
+          });
+          continue;
+        }
+
         if (!transcriptText.trim()) {
           results.push({
             reel: {
               ...reel,
               status: "failed",
               updatedAt: new Date().toISOString(),
-              lastError: error instanceof Error ? error.message : String(error)
+              lastError: compactError(error)
             },
             changed: true
           });

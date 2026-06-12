@@ -21,13 +21,14 @@ Guardrails:
 4. Run npm run sample and inspect the generated Markdown before connecting to Instagram.
 5. Use OUTPUT_DIR from .env. It can be an Obsidian vault folder or any Markdown folder.
 6. Start with RUN_LIMIT=3.
-7. If a command fails, inspect the exact error and fix the root cause before continuing.
+7. If a command fails or the session stops midway, run npm run self-heal before retrying the next pipeline step.
 8. Do not push to GitHub unless I explicitly ask.
 
 Execution:
 npm run setup
 npm run verify
 npm run doctor
+npm run self-heal
 npm run sample
 npm run login
 npm run auth-status
@@ -35,6 +36,7 @@ RUN_LIMIT=3 npm run process
 
 Backlog execution, only after my approval:
 npm run discover
+npm run self-heal
 npm run drain-capture-parallel
 npm run drain-audio-parallel
 npm run enrich-notes-parallel

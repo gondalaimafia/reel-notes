@@ -132,6 +132,8 @@ export function loadConfig(): AppConfig {
     openaiTranscriptionModel: envString("OPENAI_TRANSCRIPTION_MODEL", "gpt-4o-mini-transcribe"),
     openaiSummaryModel: envString("OPENAI_SUMMARY_MODEL", "gpt-4.1-mini"),
     localWhisperModel: envString("LOCAL_WHISPER_MODEL", "data/models/ggml-tiny.en.bin"),
-    mediaRetention: envMediaRetention()
+    mediaRetention: envMediaRetention(),
+    retryAttempts: envNumber("RETRY_ATTEMPTS", 3),
+    retryBaseMs: envNumber("RETRY_BASE_MS", 750)
   };
 }

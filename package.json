@@ -16,6 +16,7 @@
     "docs:check": "node scripts/check-docs.mjs",
     "site:build": "node scripts/build-site.mjs",
     "doctor": "tsx src/cli.ts doctor",
+    "self-heal": "tsx src/cli.ts self-heal",
     "auth-status": "tsx src/cli.ts auth-status",
     "login": "tsx src/login-profile.ts",
     "discover": "tsx src/cli.ts discover",

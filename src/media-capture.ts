@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { mediaDir } from "./paths.js";
+import { compactError, withRetry } from "./recovery.js";
 import type { AppConfig, ReelRecord } from "./types.js";
 
 export interface MediaCaptureResult {
@@ -37,7 +38,11 @@ export async function captureMediaForReels(config: AppConfig, reels: ReelRecord[
     ];
 
     try {
-      const stdout = await runCommand(config.ytdlpCommand, args);
+      const stdout = await withRetry(() => runCommand(config.ytdlpCommand, args), {
+        attempts: config.retryAttempts,
+        baseMs: config.retryBaseMs,
+        label: `media capture ${reel.id}`
+      });
       const audioPath = stdout
         .split(/\r?\n/)
         .map((line) => line.trim())
@@ -64,7 +69,7 @@ export async function captureMediaForReels(config: AppConfig, reels: ReelRecord[
           ...reel,
           status: "failed",
           updatedAt: new Date().toISOString(),
-          lastError: error instanceof Error ? error.message : String(error)
+          lastError: compactError(error)
         },
         changed: true
       });

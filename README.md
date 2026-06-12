@@ -186,6 +186,34 @@ npm run weekly
 
 All long commands checkpoint to `data/reels-index.json`, so you can stop and resume.
 
+## Self Healing
+
+If a run is interrupted, starts failing after a network issue, or leaves reels half processed, run:
+
+```sh
+npm run self-heal
+```
+
+Self healing will:
+
+- recreate missing workspace and output folders
+- back up an unreadable local index and start a fresh one
+- merge duplicate index records by reel URL
+- reset failed records when audio, transcript, or note files now exist
+- clear stale audio paths when the file is gone
+- rewrite missing or stale Markdown notes for reels that already have transcripts
+- print warnings for missing model files or API keys
+- print the next command to run, such as capture, transcription, enrichment, or note writing
+
+It will not bypass Instagram login challenges, create credentials, or delete user media by surprise.
+
+Retry behavior is configurable:
+
+```env
+RETRY_ATTEMPTS=3
+RETRY_BASE_MS=750
+```
+
 ## Output Targets
 
 Obsidian is the default:
@@ -281,7 +309,7 @@ Before publishing or opening a pull request:
 npm run verify
 ```
 
-This runs TypeScript checks, builds the project, and scans the repo for common private artifacts such as `.env`, `data/`, browser profiles, local media, local models, and real-looking API keys.
+This runs TypeScript checks, builds the project, checks the launch article metadata, builds the static article site, and scans the repo for common private artifacts such as `.env`, `data/`, browser profiles, local media, local models, and real-looking API keys.
 
 You may still need to install `ffmpeg` yourself:
 

@@ -5,6 +5,7 @@ import { enrichReelContent } from "./content-enrichment.js";
 import { loadIndex, saveIndex, upsertReels } from "./index-store.js";
 import { captureMediaForReels } from "./media-capture.js";
 import { writeNotesForReels } from "./markdown.js";
+import { loadIndexForRepair, repairWorkspace } from "./recovery.js";
 import { sampleReels } from "./sample-data.js";
 import { summarizeReels } from "./summary.js";
 import { transcribeReels } from "./transcription.js";
@@ -42,6 +43,11 @@ async function main(): Promise<void> {
 
   if (command === "auth-status") {
     await printAuthStatus();
+    return;
+  }
+
+  if (command === "self-heal") {
+    await runSelfHeal();
     return;
   }
 
@@ -186,6 +192,7 @@ function printHelp(): void {
 
 Commands:
   doctor      Check local tools, output path, and model configuration
+  self-heal   Repair safe local issues after an interrupted or failed run
   auth-status Check whether the configured Instagram browser profile is logged in
   sample       Create sample indexed reels and write Obsidian notes
   discover    Open Instagram Saved and index saved reel URLs
@@ -245,9 +252,47 @@ function printDoctor(): void {
   console.log(`OK browser channel: ${config.browserChannel}`);
   console.log(`OK transcription provider: ${config.transcriptionProvider}`);
   console.log(`OK enrichment model: ${config.openaiSummaryModel}`);
+  console.log(`OK retry attempts: ${config.retryAttempts}`);
   console.log(`${process.env.OPENAI_API_KEY ? "OK" : "MISSING"} OPENAI_API_KEY`);
   console.log(`${localModelExists ? "OK" : "MISSING"} local Whisper model: ${config.localWhisperModel}`);
   console.log("\nMissing OpenAI key is fine if you only use local transcription and skip LLM enrichment.");
+}
+
+async function runSelfHeal(): Promise<void> {
+  const preFixes: string[] = [];
+  const index = await loadIndexForRepair(preFixes);
+  const report = await repairWorkspace(config, index);
+  report.fixes.unshift(...preFixes);
+
+  const writable = report.index.reels.filter((reel) => hasTranscript(reel));
+  if (writable.length > 0) {
+    const written = await writeNotesForReels(config, writable);
+    await saveIndex({
+      ...report.index,
+      reels: mergeWrittenReels(report.index.reels, written.map((item) => item.reel))
+    });
+    const changed = countChanged(written);
+    if (changed > 0) {
+      report.fixes.push(`rewrote ${changed} missing or stale note(s)`);
+    }
+    report.nextSteps = report.nextSteps.filter((step) => step !== "run npm run write-notes");
+  }
+
+  console.log("Self healing complete.\n");
+  console.log(`Fixes: ${report.fixes.length}`);
+  for (const fix of report.fixes) {
+    console.log(`OK ${fix}`);
+  }
+
+  console.log(`Warnings: ${report.warnings.length}`);
+  for (const warning of report.warnings) {
+    console.log(`WARN ${warning}`);
+  }
+
+  console.log(`Next steps: ${report.nextSteps.length}`);
+  for (const step of report.nextSteps) {
+    console.log(`NEXT ${step}`);
+  }
 }
 
 function checkCommand(name: string, args: string[]): { name: string; ok: boolean; detail?: string } {
