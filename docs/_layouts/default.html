@@ -3,29 +3,110 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ page.title }} | Reel Notes</title>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; block-all-mixed-content">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#101412" media="(prefers-color-scheme: dark)">
+    <title>{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %} | Reel Notes</title>
     <meta name="description" content="{{ page.description }}">
+    {% if page.keywords %}<meta name="keywords" content="{{ page.keywords }}">{% endif %}
+    <meta name="author" content="Reel Notes contributors">
     <link rel="canonical" href="{{ site.url }}{{ site.baseurl }}{{ page.url }}">
     <meta property="og:title" content="{{ page.title }}">
     <meta property="og:description" content="{{ page.description }}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ site.url }}{{ site.baseurl }}{{ page.url }}">
+    <meta property="og:site_name" content="Reel Notes">
     <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ page.title }}">
+    <meta name="twitter:description" content="{{ page.description }}">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": {{ page.title | jsonify }},
-        "description": {{ page.description | jsonify }},
-        "author": {
-          "@type": "Organization",
-          "name": "Reel Notes contributors"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Reel Notes"
-        },
-        "mainEntityOfPage": "{{ site.url }}{{ site.baseurl }}{{ page.url }}"
+        "@graph": [
+          {
+            "@type": "TechArticle",
+            "@id": "{{ site.url }}{{ site.baseurl }}{{ page.url }}#article",
+            "headline": {{ page.title | jsonify }},
+            "description": {{ page.description | jsonify }},
+            "author": {
+              "@type": "Organization",
+              "name": "Reel Notes contributors"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Reel Notes"
+            },
+            "mainEntityOfPage": "{{ site.url }}{{ site.baseurl }}{{ page.url }}",
+            "about": [
+              "Instagram reels transcription",
+              "Obsidian notes",
+              "Markdown knowledge management",
+              "Local Whisper transcription"
+            ]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "{{ site.url }}{{ site.baseurl }}{{ page.url }}#software",
+            "name": "Reel Notes",
+            "applicationCategory": "ProductivityApplication",
+            "operatingSystem": "Windows, macOS, Linux",
+            "softwareVersion": "0.1.0",
+            "license": "https://github.com/gondalaimafia/reel-notes/blob/main/LICENSE",
+            "codeRepository": "https://github.com/gondalaimafia/reel-notes",
+            "downloadUrl": "https://github.com/gondalaimafia/reel-notes/releases/tag/v0.1.0",
+            "description": {{ page.description | jsonify }}
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "{{ site.url }}{{ site.baseurl }}{{ page.url }}#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is Reel Notes an Obsidian plugin?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The first version is a command line tool that writes Obsidian ready Markdown into any vault folder."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does Reel Notes need my Instagram password?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. You log in manually in a browser profile that you control, and Reel Notes reuses that browser session."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can Reel Notes run without an OpenAI API key?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Transcription can use a local Whisper model. LLM enrichment needs a model provider for topic filenames, key lessons, and cleaned notes."
+                }
+              }
+            ]
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "{{ site.url }}{{ site.baseurl }}{{ page.url }}#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Reel Notes",
+                "item": "{{ site.url }}{{ site.baseurl }}/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": {{ page.title | jsonify }},
+                "item": "{{ site.url }}{{ site.baseurl }}{{ page.url }}"
+              }
+            ]
+          }
+        ]
       }
     </script>
     <style>
